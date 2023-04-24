@@ -1,4 +1,4 @@
-# Mantra Redis Client 
+# Mantra Redis Server 
 
 
 ## Setup
@@ -18,10 +18,10 @@ pnpm install
 
 ## Development Server
 
-Start the development server on `http://localhost:3000`
+Start the development server
 
 ```bash
-npm run dev
+node server.js
 ```
 
 ## Production
@@ -29,13 +29,13 @@ npm run dev
 Build the application for production:
 
 ```bash
-npm run build
+node server.js
 ```
 
 Locally preview production build:
 
 ```bash
-npm run preview
+node server.js
 ```
 
 
