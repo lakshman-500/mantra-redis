@@ -7,9 +7,7 @@ const serverId = process.env.SERVER_ID;
 status_map = {};
 
 write_status_map = () => {
-  console.log("file Name: " + process.env.STATUS_MAP_FILE);
-  fs.writeFileSync("map.json" ,
-  //process.env.STATUS_MAP_FILE,
+  fs.writeFileSync(process.env.STATUS_MAP_FILE,
    JSON.stringify(status_map));
 };
 

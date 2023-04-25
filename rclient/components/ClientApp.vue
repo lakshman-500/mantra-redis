@@ -11,6 +11,21 @@
         </li>
       </ul>
     </div>
+    <div class="bg-blue gap-4 p-10">
+      <ul>
+        <li v-for="l in serverMsgs">
+          <div v-if="l.type === 'channel-subscription'">
+            {{ l.type }} : {{ l.messageText }}
+          </div>
+          <div v-if="l.type === 'statuses'">
+            Domain [{{ l.domain_id }}] : {{ l.type }}
+          </div>
+          <div v-if="l.type === 'redis-msg'">
+            {{ l.type }} : {{ l.messageText }}
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -25,12 +40,15 @@ const socket = new io(config.public["cacheServiceUrl"]);
 
 const iMsg = ref("");
 const msgs = ref([]);
+const serverMsgs = ref([]);
 
 onMounted(() => {
   socket.on("notify", (data) => {
-    LogData(data);
+    ///LogData(data);
     // to compile messages list for viewing purposes..
-    msgs.value = [...msgs.value, data];
+    var d = {};
+    d = data; //JSON.parse(data);
+    msgs.value.push(data); // = [...msgs.value, data];
     // send additional details to tag with connection
     postConnection(socket);
   });
@@ -47,8 +65,12 @@ function postConnection(socket) {
   };
   socket.emit("registerClient", JSON.stringify(msg));
   socket.on("new_message", (data) => {
-    console.log("received..");
+    console.log("received new msg..");
     console.log(data);
+    var d = {};
+    d = JSON.parse(data);
+
+    serverMsgs.value = [...serverMsgs.value, d];
   });
 }
 /// all messages from client would go as 'message' types..

@@ -4,7 +4,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const EventEmitter = require("events");
-
+const redis = require("./redis");
 const sm = require("./socket_manager");
 
 const emits = new EventEmitter();
@@ -15,6 +15,8 @@ const io = new Server(server, {
     // "*" 
   },
 });
+
+redis.deleteAllKeys(process.env.SERVER_ID);
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");

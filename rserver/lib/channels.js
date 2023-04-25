@@ -4,23 +4,22 @@ let sm = require('./socket_manager');
 const ut = require("./utils");
 /****************************************************
  *  CHANNELS
+ *  Get Channels for the user where he will be listening"""
+ * token is the user id?? 
  ****************************************************/
 getChannels = async (token) => {
-  // We will add domainid to token in real life scenario
-  // Get Channels for the user where he will be listening"""
-  if (token == "1") return ["General", "mercury", "earth", "venus"];
-  else return ["General", "mercury", "venus"];
-
-  // We will subscribe to "{channel}", "{domain-id}-status"
+   return ["General","mercury", "venus"];  
 };
 
 // Get Status Channel
 sendDomainStatuses = async (domainId, _socket) => {
   let key = utils.getStatusChannelKeyForDomain(domainId);
   console.log("Sending statuses", key);
+  // all values under the key
   let statuses = await redis.client.json.get(key);
-  console.log("Sending statuses", statuses);
-
+  // values under the kay at specified path
+  //let statuses = await redis.client.json.get(key, ".s-" + _socket.uid);
+  
   let message = {};
   message.domain_id = domainId;
   message.type = "statuses";

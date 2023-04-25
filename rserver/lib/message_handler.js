@@ -70,7 +70,7 @@ async function registerClient(socket, registration){
     // send domain statuses.
  // Get Channels and Register
     let channels = await _channel.getChannels(tokenID);
-    console.log("Channels: " + channels);
+  //  console.log("Channels: " + channels);
     // Redis Registration
     await pubsub.subscribeToPubSub(channels, socket);
 
@@ -82,32 +82,32 @@ async function registerClient(socket, registration){
     return;
 };
 
-async function  postMessage(socket, messagePost){
-    // {"type":"post","messageText":"asdf asdf","sender":"wn9GYpHNm9UDg_tRAAAF","channel":"General"}
-    // example:
-    // type: "post",
-    // messageText: iMsg.value,
-    // sender: socket.id,
-    // channel: "General",
-
-    //console.log(`${messagePost.type}`);
-  
+//-------postMessage---------------------------------------
+// posting a message on a channel..
+// by producer - which is a redis-client
+// channel is chosen by the sender 
+// if no channel is provided, 'General' is used by default
+//---------------------------------------------------------
+async function  postMessage(socket, messagePost){ 
     var msgJson = {};
-    //msgJson = messagePost;
     msgJson = JSON.parse(messagePost);
-    //JSON.parse(messagePost);;
-    //JSON.parse(messagePost);
+
     var mtype  = msgJson.type;
     var messageText = msgJson.messageText;
     var sender = msgJson.sender;
-  console.log(`${mtype},${messageText},${sender}`);
+    var channel = msgJson.channel;
+    if(channel ==  undefined){
+        channel = "General";
+    }
+
+  //console.log(`${mtype},${messageText},${sender}`);
     
     const post_message  = {
             type: "new_message",
             ///mtype,
             messageText: messageText,
             sender: sender,
-            channel: "General"
+            channel: channel
         };
 
     producer.publish(post_message.channel, JSON.stringify(post_message));

@@ -19,6 +19,7 @@ addUserStatus = async (domainId, userId, os, socket) => {
   const key = getStatusChannelKeyForDomain(domainId);
   const path = `$.s-${utils.serverId}-${socket.uid}`;
 
+  console.log(`K: = ${key},  P: =  ${path}`);
   // We will store path as it is unique against the channel key
   utils.status_map[path] = key;
   utils.write_status_map();
