@@ -1,30 +1,45 @@
 <template>
-  <div>
-    <div>
-      <input type="text" v-model="iMsg" id="messageText" autocomplete="off" />
-      <button @click="sendMessage">Send</button>
-    </div>
-    <div class="bg-blue gap-4 p-10">
-      <ul>
-        <li v-for="l in msgs">
-          {{ l }}
-        </li>
-      </ul>
-    </div>
-    <div class="bg-blue gap-4 p-10">
-      <ul>
-        <li v-for="l in serverMsgs">
-          <div v-if="l.type === 'channel-subscription'">
-            {{ l.type }} : {{ l.messageText }}
-          </div>
-          <div v-if="l.type === 'statuses'">
-            Domain [{{ l.domain_id }}] : {{ l.type }}
-          </div>
-          <div v-if="l.type === 'redis-msg'">
-            {{ l.type }} : {{ l.messageText }}
-          </div>
-        </li>
-      </ul>
+  <div class="space-y-4 w-full bg-white shadow rounded">
+    <div class="grid grid-cols-2 gap-6">
+      <div class="shadow-2xl bg-white rounded-lg p-4">
+        <input
+          class="rounded-lg bg-white w-96 h-full p-x2 hover:border-red"
+          type="text"
+          v-model="iMsg"
+          id="messageText"
+          autocomplete="off"
+        />
+        <button
+          @click="sendMessage"
+          class="animate-bounce transition ease-in-out delay-150 duration-700 rounded-lg bg-blue w-16 h-full p-x2 m-x3 hover:bg-blue-300 hover:scale-110 hover:rotate-15 hover:-translate-y-2 hover:skew-y-6"
+        >
+          Send
+        </button>
+      </div>
+      <div
+        class="shadow-2xl bg-white rounded-lg hover:bg-blue-400 hover:skew-x-20 hover:origin-bottom-left hover:transition-shadow"
+      >
+        <ul>
+          <li v-for="l in msgs">
+            {{ l }}
+          </li>
+        </ul>
+      </div>
+      <div class="shadow-2xl bg-white rounded-lg bg-blue-500 aspect-square">
+        <ul>
+          <li v-for="l in serverMsgs">
+            <div v-if="l.type === 'channel-subscription'">
+              {{ l.type }} : {{ l.messageText }}
+            </div>
+            <div v-if="l.type === 'statuses'">
+              Domain [{{ l.domain_id }}] : {{ l.type }}
+            </div>
+            <div v-if="l.type === 'redis-msg'">
+              {{ l.type }} : {{ l.messageText }}
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>

@@ -23,7 +23,7 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-
+    
     sm.addConnection (socket);    
 
 });

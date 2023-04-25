@@ -39,6 +39,7 @@ closeRedis = async (socket) => {
       return;
     }
     const map = JSON.parse(fileString);
+    console.log("read from file.. " + fileString);
     for (const k in map.keys) {
       console.log("To delete: " +  k);
       const statusDomainId = map[key];
