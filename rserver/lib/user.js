@@ -19,11 +19,13 @@ addUserStatus = async (domainId, userId, os, socket) => {
   const key = getStatusChannelKeyForDomain(domainId);
   //const path = `$.s-${utils.serverId}-${socket.uid}`;
 
-  console.log(`K: = ${key},  P: =  ${path}`);
+  //console.log(`K: = ${key},  P: =  ${path}`);
 
   // Add UserStatus
   try {
-    console.log(`${key} ${path}`);
+    //await redis.client.SET("CLIENT SETNAME", socket.uid);
+
+    //console.log(`${key} ${path}`);
 
     var path = `$.${socket.uid}`;
 

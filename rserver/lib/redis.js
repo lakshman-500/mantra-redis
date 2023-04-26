@@ -31,7 +31,10 @@ closeRedis = async (socket) => {
 };
 
 // When server restarts, we should delete its keys in redis before it starts
- deleteAllKeys  = async (serverId)=>  {
+deleteAllKeys = async (serverId) => {
+  // json.del serverid... should be enough..
+  // can remove the below file based work..
+
   // Read through the keys in the map and delete them all
   fs.readFile(process.env.STATUS_MAP_FILE, function (err, fileString) {
     if (err) {
@@ -41,7 +44,7 @@ closeRedis = async (socket) => {
     const map = JSON.parse(fileString);
     console.log("read from file.. " + fileString);
     for (const k in map.keys) {
-      console.log("To delete: " +  k);
+      console.log("To delete: " + k);
       const statusDomainId = map[key];
       try {
         client.json.del(statusDomainId, key);
