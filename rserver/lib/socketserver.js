@@ -24,6 +24,23 @@ const io = new Server(server, {
 // clear all keys of given server!! - to verify this function..
 redis.deleteAllKeys(process.env.SERVER_ID);
 
+try {
+  // open a JSON Document  with serverid as the key..
+  redis.client.json.set(process.env.SERVER_ID, "$", {});
+} catch (e) {
+  console.log(" ERROR SETTING REDIS KEY PATH " + e);
+  /** handle the following...
+   * key not found?
+   * path not found?
+   * status invalid?
+   * client invalid?
+   * or json module problem?
+   * or redis itself is wrong?
+   */
+  // await redis.client.json.set(key, "$", {});
+  // await redis.client.json.set(key, path, userStatus);
+}
+
 // flag to hold if the server is properly registerred
 var serverReady = false;
 
@@ -32,7 +49,7 @@ var serverReady = false;
 
 pubsub.serverSubscribeToRedis();
 
-const RUN_EVERY_X_SECS = 15;
+const RUN_EVERY_X_SECS = 60 * 10;
 /// continuously run this for every RUN_EVERY_X_SECS
 setInterval(() => {
   console.log("can Send Alive msg? " + serverReady);

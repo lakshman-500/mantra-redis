@@ -1,6 +1,5 @@
-let redis = require('./redis');
-let utils = require('./utils');
-
+let redis = require("./redis");
+let utils = require("./utils");
 
 // key-status:domain_id jsonkey- s-{socket-id} value: {u: a: {uuid}: } - we store uuid as key as we can search for that uuid in how many places..
 getUserStatus = (userId, os, socket) => {
@@ -14,32 +13,49 @@ getUserStatus = (userId, os, socket) => {
 };
 
 addUserStatus = async (domainId, userId, os, socket) => {
+  var doc = process.env.SERVER_ID;
   userStatus = getUserStatus(userId, os, socket);
 
   const key = getStatusChannelKeyForDomain(domainId);
-  const path = `$.s-${utils.serverId}-${socket.uid}`;
+  //const path = `$.s-${utils.serverId}-${socket.uid}`;
 
   console.log(`K: = ${key},  P: =  ${path}`);
-  // We will store path as it is unique against the channel key
-  utils.status_map[path] = key;
-  utils.write_status_map();
 
   // Add UserStatus
   try {
     console.log(`${key} ${path}`);
+
+    var path = `$.${socket.uid}`;
+
+    await redis.client.json.set(doc, path, {});
+    path = path + `.${key}`;
+    await redis.client.json.set(doc, path, userStatus);
+
+    // We will store path as it is unique against the channel key
+    utils.status_map[path] = key;
+    utils.write_status_map();
+
     //await client.json.set("1", "$", {});
-    await redis.client.json.set(key, path, userStatus);
+    // await redis.client.json.set(doc, path + "." + key, userStatus);
   } catch (e) {
-    console.log(e);
-    await redis.client.json.set(key, "$", {});
-    await redis.client.json.set(key, path, userStatus);
+    console.log(" ERROR SETTING REDIS KEY PATH " + e);
+    /** handle the following...
+     * key not found?
+     * path not found?
+     * status invalid?
+     * client invalid?
+     * or json module problem?
+     * or redis itself is wrong?
+     */
+    // await redis.client.json.set(key, "$", {});
+    // await redis.client.json.set(key, path, userStatus);
   }
 };
 
 removeUserStatus = async (domainId, userId, socket) => {
   const key = getStatusChannelKeyForDomain(domainId);
-  const path = `$.s-${serverId}-${socket.uid}`;
-
+  //const path = `$.s-${serverId}-${socket.uid}`;
+  const path = `$.s.${serverId}.${socket.uid}`;
   // Add UserStatus
   try {
     await client.json.del(key, path);
@@ -53,6 +69,6 @@ removeUserStatus = async (domainId, userId, socket) => {
 };
 
 module.exports = {
-	addUserStatus,
-	removeUserStatus
-}
+  addUserStatus,
+  removeUserStatus,
+};
