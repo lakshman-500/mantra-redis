@@ -20,8 +20,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      baseURL: process.env.BASE_URL || "http://localhost:3000",
-      cacheServiceUrl: "http://localhost:2222",
+      baseURL: process.env.BASE_URL || "http://localhost:3050",
+      cacheServiceUrl: "http://localhost:1111",
       /// process.env.SERVER_ID + ":" + process.env.PORT,
       ///"http://localhost:2222",
       tokenID: 1,

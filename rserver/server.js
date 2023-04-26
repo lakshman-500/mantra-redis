@@ -1,5 +1,24 @@
-require('dotenv').config()
+require("dotenv").config();
 
-const ss= require("./lib/socketserver");
+if (process.argv.length != 4) {
+  console.log("Insufficient Args");
+  console.log("===========================================");
+  console.log("node server.js <SERVER-NAME> <PORT>");
+  console.log("===========================================");
+} else {
+  process.env.SERVER_ID = process.argv[2];
+  process.env.SERVER_PORT = process.argv[3];
+  // process.argv.forEach(function (val, index, array) {
+  //   console.log(index + ": " + val);
+  //   if (index == 3) {
+  //     process.env.SERVER_PORT = val;
+  //   }
+  //   if (index == 2) {
+  //     process.env.SERVER_ID = val;
+  //   }
+  // });
 
-ss.server
+  const ss = require("./lib/socketserver");
+
+  ss.server;
+}

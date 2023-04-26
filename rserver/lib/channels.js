@@ -1,14 +1,14 @@
-let utils = require('./utils');
-let redis = require('./redis');
-let sm = require('./socket_manager');
+let utils = require("./utils");
+let redis = require("./redis");
+///let sm = require('./socket_manager');
 const ut = require("./utils");
 /****************************************************
  *  CHANNELS
  *  Get Channels for the user where he will be listening"""
- * token is the user id?? 
+ * token is the user id??
  ****************************************************/
 getChannels = async (token) => {
-   return ["General","mercury", "venus"];  
+  return ["General", "mercury", "venus"];
 };
 
 // Get Status Channel
@@ -19,7 +19,7 @@ sendDomainStatuses = async (domainId, _socket) => {
   let statuses = await redis.client.json.get(key);
   // values under the kay at specified path
   //let statuses = await redis.client.json.get(key, ".s-" + _socket.uid);
-  
+
   let message = {};
   message.domain_id = domainId;
   message.type = "statuses";
@@ -28,6 +28,6 @@ sendDomainStatuses = async (domainId, _socket) => {
 };
 
 module.exports = {
-    getChannels,
-    sendDomainStatuses
-}
+  getChannels,
+  sendDomainStatuses,
+};
