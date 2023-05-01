@@ -1,8 +1,11 @@
 var fs = require("fs");
 const redis = require("redis");
+const redis2 = require("ioredis");
+const server = require("./socketserver");
 /****************************************************
  *  REDIS PUBLISH/SUBSCRIBE
  ****************************************************/
+let redisProxy = new redis2();
 
 let client = redis.createClient({
   socket: {
@@ -10,21 +13,36 @@ let client = redis.createClient({
     port: process.env.REDIS_PORT,
   },
   database: process.env.REDIS_DB,
+  name: process.env.serverId,
 });
+
+//client.sendCommand("CLIENT SETNAME", process.env.serverId);
+//redisProxy.send_command("CLIENT", "SETNAME", process.env.serverId);
+
 // this is the server (application) ID
 var serverID = process.env.SERVER_ID;
+// client.set("SETNAME", serverID, (err, reply) => {
+//   console.log("call back from set name..");
+//   if (err) {
+//     console.error(err);
+//   } else {
+//     console.log(reply);
+//   }
+// });
+//console.log("client set name complete!");
 client.connect().then(() => {
-  console.log(`Connected Redis - OK`);
+  console.log("Connected Redis - OK");
   console.log("Status Client Initialized");
   client.set("name", serverID).then((res) => {
     console.log(res);
     client.get("name").then((res) => {
       console.log("connection name is set as  :  " + res);
-      client.clientId().then((res) => {
-        console.log("connection id is  :  " + res);
-      });
     });
   });
+  //client.sendCommand("name", serverID).then((res) => {});
+  //, (e, r) => {
+  //  console.log("Name is set..");
+  //});
 });
 
 // Keys
@@ -79,6 +97,7 @@ deleteAllKeys = async (serverId) => {
 };
 
 module.exports = {
+  redisProxy,
   client,
   setRedis,
   closeRedis,

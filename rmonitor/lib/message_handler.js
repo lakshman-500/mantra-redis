@@ -56,7 +56,7 @@ async function registerClient(socket, registration) {
   var tokenID = regJson.tokenID;
 
   let domainId = "1";
-  let userId = regJson.uid; // tokenID;
+  let userId = tokenID;
 
   // register on general channel
   // register on redis

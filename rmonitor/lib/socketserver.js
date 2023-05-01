@@ -26,7 +26,8 @@ redis.deleteAllKeys(process.env.SERVER_ID);
 
 try {
   // open a JSON Document  with serverid as the key..
-  redis.client.json.set(process.env.SERVER_ID, "$", {});
+  //  redis.client.json.set(process.env.SERVER_ID, "$", {});
+  redis.client.json.set("status-1", "$", {});
 } catch (e) {
   console.log(" ERROR SETTING REDIS KEY PATH " + e);
   /** handle the following...
@@ -49,28 +50,12 @@ var serverReady = false;
 
 pubsub.serverSubscribeToRedis();
 
-const RUN_EVERY_X_SECS = 60 * 10;
+const RUN_EVERY_X_SECS = 10;
 /// continuously run this for every RUN_EVERY_X_SECS
-let keepAliveMessage = setInterval(() => {
-  console.log("can Send Alive msg? " + serverReady);
+setInterval(() => {
   if (serverReady) {
-    console.log("Ready to Send alive message...");
-    // current server shall intimate other servers
-    // this indicates: Activation status of current server
-    const post_server_alive_message = {
-      type: "server-subscription-alive",
-      ///mtype,
-      messageText: `Server-${serverID} is live`,
-      sender: `${serverID}`,
-      channel: "server-channel",
-    };
-
-    // publsihing the server messgae to listeners
-    pubsub.serverProducer.publish(
-      post_server_alive_message.channel,
-      JSON.stringify(post_server_alive_message)
-    );
-    console.log("Sent alive message!");
+    console.log("keep checking clients list... as updated by redis..");
+    pubsub.fetchClientList();
   }
 }, 1000 * RUN_EVERY_X_SECS);
 

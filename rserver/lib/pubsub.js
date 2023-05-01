@@ -23,7 +23,7 @@ let serverSubscribeToRedis = async () => {
     type: "server-subscription-activated",
     ///mtype,
     messageText: `Server-${serverID} Subscribing on Redis`,
-    sender: `Server-${serverID}`,
+    sender: `${serverID}`,
     channel: "server-channel",
   };
 
@@ -40,11 +40,19 @@ let serverSubscribeToRedis = async () => {
       let message = JSON.parse(server_message);
 
       // only if sender is not the current one..
-      if (message.sender != `Server-${serverID}`) {
-        console.log("Message From <SOME> server: " + server_message);
+      if (message.sender != `${serverID}`) {
+        //console.log("Message on server-channel: " + message.messageText);
+
+        // + server_message);
         // based on message type..
         // we can delegate to other functionaries..
         //
+        var mt = message.messageText;
+        let mtm = [];
+        mtm = JSON.parse(mt);
+        mtm.forEach((element) => {
+          console.log(`${element.id}, ${element.name}`);
+        });
       }
     } catch (e) {
       console.log("EXCEPTION: " + e.message);
@@ -75,7 +83,7 @@ let subscribeToPubSub = async (channels, _socket) => {
   ut.sendToSocket(JSON.stringify(post_message), _socket);
   subscriber.subscribe(channels, (redis_message, channel) => {
     try {
-      console.log("redis msg: " + redis_message);
+      //console.log("redis msg: " + redis_message);
       let message = JSON.parse(redis_message);
       let send_message = `Subscription message: ${channel} - ${message.type} - ${message.sender} - ${redis_message}`;
 

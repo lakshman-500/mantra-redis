@@ -2,19 +2,38 @@
   <div class="space-y-4 w-full bg-white shadow rounded">
     <div class="grid grid-cols-1 gap-6">
       <div class="shadow-2xl bg-white rounded-lg p-4">
-        <input
-          class="rounded-lg bg-white w-96 h-full p-x2 hover:border-red"
-          type="text"
-          v-model="iMsg"
-          id="messageText"
-          autocomplete="off"
-        />
-        <button
-          @click="sendMessage"
-          class="animate-bounce transition ease-in-out delay-150 duration-700 rounded-lg bg-blue w-16 h-full p-x2 m-x3 hover:bg-blue-300 hover:scale-110 hover:rotate-15 hover:-translate-y-2 hover:skew-y-6"
-        >
-          Send
-        </button>
+        <div v-show="!isLoggedIn">
+          <input
+            class="rounded-lg bg-white w-auto h-full p-x2 hover:border-red"
+            placeholder="user id"
+            type="text"
+            v-model="iMsgSender"
+            id="messageSender"
+            autocomplete="off"
+          />
+          <button
+            @click="login"
+            class="animate-bounce transition ease-in-out delay-150 duration-700 rounded-lg bg-blue w-16 h-full p-x2 m-x3 hover:bg-blue-300 hover:scale-110 hover:rotate-15 hover:-translate-y-2 hover:skew-y-6"
+          >
+            Login
+          </button>
+        </div>
+        <div v-show="isLoggedIn">
+          <input
+            placeholder="enter message"
+            class="rounded-lg bg-white w-96 h-full p-x2 hover:border-red"
+            type="text"
+            v-model="iMsg"
+            id="messageText"
+            autocomplete="off"
+          />
+          <button
+            @click="sendMessage"
+            class="animate-bounce transition ease-in-out delay-150 duration-700 rounded-lg bg-blue w-16 h-full p-x2 m-x3 hover:bg-blue-300 hover:scale-110 hover:rotate-15 hover:-translate-y-2 hover:skew-y-6"
+          >
+            Send
+          </button>
+        </div>
       </div>
       <!-- <div
         class="shadow-2xl bg-white rounded-lg hover:bg-blue-400 hover:skew-x-20 hover:origin-bottom-left hover:transition-shadow"
@@ -54,9 +73,10 @@ const socket = new io(config.public["cacheServiceUrl"]);
 ///"http://localhost:2222"
 
 const iMsg = ref("");
+const iMsgSender = ref("");
 const msgs = ref([]);
 const serverMsgs = ref([]);
-
+const isLoggedIn = ref(false);
 onMounted(() => {
   socket.on("notify", (data) => {
     ///LogData(data);
@@ -65,9 +85,14 @@ onMounted(() => {
     d = data; //JSON.parse(data);
     msgs.value.push(data); // = [...msgs.value, data];
     // send additional details to tag with connection
-    postConnection(socket);
+    //postConnection(socket);
   });
 });
+
+function login() {
+  postConnection(socket);
+  isLoggedIn.value = true;
+}
 
 /// additional detials of connection!
 function postConnection(socket) {
@@ -77,6 +102,7 @@ function postConnection(socket) {
     // more details can be composed as a user  profile.
     profile: {},
     tokenID: config.public["tokenID"],
+    uid: iMsgSender.value,
   };
   socket.emit("registerClient", JSON.stringify(msg));
   socket.on("new_message", (data) => {
