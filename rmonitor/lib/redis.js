@@ -7,6 +7,8 @@ const server = require("./socketserver");
  ****************************************************/
 let redisProxy = new redis2();
 
+currentID = -1;
+
 let client = redis.createClient({
   socket: {
     host: process.env.REDIS_SERVER,
@@ -35,8 +37,9 @@ client.connect().then(() => {
   console.log("Status Client Initialized");
   client.set("name", serverID).then((res) => {
     console.log(res);
-    client.get("name").then((res) => {
-      console.log("connection name is set as  :  " + res);
+    client.clientId().then((res) => {
+      console.log("connection id is set as  :  " + res);
+      currentID = res;
     });
   });
   //client.sendCommand("name", serverID).then((res) => {});

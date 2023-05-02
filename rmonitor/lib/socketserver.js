@@ -52,10 +52,10 @@ pubsub.serverSubscribeToRedis();
 
 const RUN_EVERY_X_SECS = 10;
 /// continuously run this for every RUN_EVERY_X_SECS
-setInterval(() => {
+setInterval(async () => {
   if (serverReady) {
     console.log("keep checking clients list... as updated by redis..");
-    pubsub.fetchClientList();
+    await pubsub.fetchClientList();
   }
 }, 1000 * RUN_EVERY_X_SECS);
 

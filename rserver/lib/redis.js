@@ -10,21 +10,25 @@ let client = redis.createClient({
     port: process.env.REDIS_PORT,
   },
   database: process.env.REDIS_DB,
+  name: process.env.serverId,
 });
 // this is the server (application) ID
 var serverID = process.env.SERVER_ID;
-client.connect().then(() => {
+client.connect().then(async () => {
   console.log(`Connected Redis - OK`);
   console.log("Status Client Initialized");
-  client.set("name", serverID).then((res) => {
-    console.log(res);
-    client.get("name").then((res) => {
-      console.log("connection name is set as  :  " + res);
-      client.clientId().then((res) => {
-        console.log("connection id is  :  " + res);
+  //client.set("name", serverID).then((res) => {
+  //console.log(res);
+  client.clientGetName().then((res) => {
+    console.log("connection name is set as  :  " + res);
+    client.clientId().then((res) => {
+      console.log("connection id is  :  " + res);
+      client.clientGetName().then((res1) => {
+        console.log("client get name  is  :  " + res1);
       });
     });
   });
+  //});
 });
 
 // Keys

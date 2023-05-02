@@ -39,20 +39,37 @@ let serverSubscribeToRedis = async () => {
     try {
       let message = JSON.parse(server_message);
 
+      // MESSAGE TYPE
+      //'server-subscription-update-servers-deleted'
+
       // only if sender is not the current one..
       if (message.sender != `${serverID}`) {
-        //console.log("Message on server-channel: " + message.messageText);
+        console.log("Message on server-channel: " + message.messageText);
 
         // + server_message);
         // based on message type..
         // we can delegate to other functionaries..
         //
         var mt = message.messageText;
-        let mtm = [];
-        mtm = JSON.parse(mt);
-        mtm.forEach((element) => {
-          console.log(`${element.id}, ${element.name}`);
-        });
+        if (message.type == "server-subscription-update-servers-deleted") {
+          let mtm = [];
+          mtm = JSON.parse(mt);
+          mtm.forEach((element) => {
+            // redis.client.clientId().then((res) => {
+            //   //  console.log("current connection id is  :  " + res);
+            //   redis.client.clientId().then((res1) => {
+            //     // console.log("current  client get id  is  :  " + res1);
+            //   });
+            // });
+            console.log(
+              `Deleted Server Info: id = ${element.id}, name = ${element.name}`
+            );
+            console.log(
+              `Propagate this Deleted Server Info: id = ${element.id} to all subscribers at server end..`
+            );
+            console.log("----------------------------------------");
+          });
+        }
       }
     } catch (e) {
       console.log("EXCEPTION: " + e.message);

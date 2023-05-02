@@ -89,22 +89,114 @@ let subscriptionUpdateToOtherServers = async (t, mt, s, ch) => {
     JSON.stringify(post_server_message)
   );
 };
-currentServersList = [];
+deadServers = [];
+liveServers = [];
+
 let fetchClientList = async () => {
   var cl = redis.client.clientList();
-  console.log("client lst" + cl);
-  currentServersList = [];
-  (await cl).forEach(function (v, i, a) {
-    console.log("connection name = " + v.id);
-    currentServersList.push(v);
+  var cl_ = await cl;
+  //console.log("client lst" + cl_);
+  // assume all are dead...
+  deadServers = [].concat(liveServers);
+  liveServers = [].concat(cl_);
+  // now get from redis and check howmany servers are alive..
+  cl_.forEach(function (v, i, a) {
+    // console.log("connection name = " + v.id);
+    // liveServers.push(v);
+    // // in the current list of live servers with the monitor
+    // // get active connecitons with the id taken from redis list
+    // var activeConnections = liveServers.filter((e) => {
+    //   return e.id == v.id;
+    // });
+    // /// if v.id  is not found.. add to list
+    // if (activeConnections.length == 0) {
+    //   liveServers.push(v);
+    // } else {
+    //   /// if v.id is found.. then update the status..
+    // }
   });
-  console.log("stringing..." + JSON.stringify(currentServersList));
-  subscriptionUpdateToOtherServers(
-    "server-subscription-update",
-    JSON.stringify(currentServersList),
-    serverID,
-    "server-channel"
+  // console.log(
+  //   `Before: live: ${liveServers.length}, dead: ${deadServers.length}`
+  // );
+
+  //liveServers.forEach(function (v, i, a)
+  var i = 0;
+  console.log("LIVE SERVERS" + liveServers);
+  while (i < liveServers.length) {
+    var ls = liveServers[i];
+    console.log("LS: " + ls[0]);
+    deleteIfFound(ls);
+    i++;
+  }
+  console.log(
+    `After: live: ${liveServers.length}, dead: ${deadServers.length}`
   );
+  // var ls = [];
+  // var ds = [];
+  // liveServers.forEach(function (v, i, a) {
+  //   ls.push(v.id);
+  //   deadServers.forEach(function (v1, i1, a1) {
+  //     if (v.id === v1.id) {
+  //       console.log(`same: ${v.id}`);
+  //     }
+  //   });
+  // });
+
+  // console.log(`After: live: ${liveServers}, dead: ${deadServers}`);
+  // deadServers.forEach(function (v, i, a) {
+  //   //
+  //   if (v.id == ls.id) {
+  //     console.log("removing from deleted list..: " + a[i].id);
+  //     deadServers = deadServers.splice(i, 1);
+  //   }
+  // });
+  //}
+
+  ////console.log("DEAD... " + JSON.stringify(deadServers));
+
+  // is there any use sending live servers list to each server??
+  //==========================================================
+  // subscriptionUpdateToOtherServers(
+  //   "server-subscription-update",
+  //   JSON.stringify(liveServers),
+  //   serverID,
+  //   "server-channel"
+  // );
+  if (deadServers.length > 0) {
+    subscriptionUpdateToOtherServers(
+      "server-subscription-update-servers-deleted",
+      JSON.stringify(deadServers),
+      serverID,
+      "server-channel"
+    );
+  }
+  function deleteIfFound(ls) {
+    let ind = 0;
+    let count = deadServers.length;
+
+    console.log("Elements in dead serves list: " + count);
+    console.log("Dead Elements: " + deadServers);
+    console.log("==========================================");
+    while (ind < count) {
+      console.log(
+        `ELEMENT at ${ind}, ${ls.id},${redis.currentID} : ` + deadServers
+      );
+      try {
+        if (ls.id != redis.currentID && deadServers[ind]["id"] == ls.id) {
+          // console.log("==========================================");
+          // console.log(deadServers[ind]);
+          // console.log("==========================================");
+          console.log(
+            `Deleting node ${ls.id} / ${deadServers[ind].id} at  ${ind}, dead count: ${deadServers.length}`
+          );
+          deadServers.splice(ind, 1);
+        }
+      } catch (error) {
+        console.log("-0-");
+      }
+      ind = ind + 1;
+    }
+  }
   // redis.client.clie("list", (err, reply) => {
   //   if (err) {
   //     console.error(err);
