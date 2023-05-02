@@ -14,9 +14,53 @@ getUserStatus = (userId, os, socket) => {
   return status;
 };
 
+getUserSubscritpion = (userStatus) => {
+  var fa = Subscriptions.filter((e) => {
+    return e.id == userStatus.userId;
+  });
+  if (fa.length > 0) {
+    console.log("add another session..." + userStatus.userId);
+    let us = fa[0];
+    console.log("element from array.." + us["id"]);
+    let svrSubcrs = us["subscrs"];
+    var ss = svrSubcrs.filter((e) => {
+      return e.serverId == userStatus.serverId;
+    });
+    let ss0 = ss[0]; //
+    let sessions = ss0["sessions"];
+    console.log("current sessions : " + sessions);
+    sessions.push(userStatus);
+    return us;
+  } else {
+    console.log("add first session..." + userStatus.userId);
+    let us = {};
+    us["id"] = userStatus["userId"];
+    us["subscrs"] = [];
+    let svrSub = {};
+    svrSub["serverId"] = userStatus["serverId"];
+    svrSub["sessions"] = [];
+    svrSub["sessions"].push(userStatus);
+    // let state = {};
+    // state["server"] = svrSub;
+    us["subscrs"].push(svrSub);
+    Subscriptions.push(us);
+    return us;
+  }
+};
+Subscriptions = [];
+// checkUserStatus = (userId) => {
+//   redis.client.json.get(userId, ".", (err, json) => {
+//     if (err) {
+//       reject(err);
+//     } else {
+//       const parsedJson = JSON.parse(json);
+//     }
+//   });
+// };
 addUserStatus = async (domainId, userId, os, socket) => {
   var doc = process.env.SERVER_ID;
-  userStatus = getUserStatus(userId, os, socket);
+  var userStatus = getUserStatus(userId, os, socket);
+  var subscr = getUserSubscritpion(userStatus);
   console.log(userStatus);
 
   // Add UserStatus
@@ -35,7 +79,9 @@ addUserStatus = async (domainId, userId, os, socket) => {
     //redis.client.json.get(key, async (v) => {
 
     //await redis.client.json.set(key, `$`, {});
-    await redis.client.json.set(`${key}`, `${userId}`, userStatus);
+    await redis.client.json.set(`${key}`, `${userId}`, subscr);
+    //userStatus);
+
     // console.log("user key: " + `$.${userId}`);
     // await redis.client.json.set(
     //   `$.${userId}`, //key,
