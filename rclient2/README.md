@@ -1,4 +1,4 @@
-# Mantra Redis Client 
+# Mantra Redis Client - this is replica of rclient.. except that nuxt config defs have diff. port nums
 
 
 ## Setup
